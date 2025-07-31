@@ -1,4 +1,3 @@
-package com.laioffer.travelplanner.Dto;
+package com.laioffer.travelplanner.dto;
 
-public class PoiDTO {
-}
+public record PoiDTO(String name, double lat, double lng) {}
