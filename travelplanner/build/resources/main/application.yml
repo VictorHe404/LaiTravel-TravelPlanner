@@ -33,6 +33,6 @@ spring:
 google:
   places:
     apiKey: "${GOOGLE_PLACES_API_KEY:AIzaSyCta9LrvRHV6vmVK2pfIWp6_6Yxvjaux1M}"
-    useProxy: false
+    useProxy: true
     proxyHost: 127.0.0.1
     proxyPort: 7890
