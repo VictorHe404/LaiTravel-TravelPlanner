@@ -34,21 +34,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // 测试
-    //testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //testImplementation 'org.springframework.security:spring-security-test'
-    //testImplementation 'org.testcontainers:junit-jupiter:1.20.3'
-    //testImplementation 'org.testcontainers:postgresql:1.20.3'
 }
 
 tasks.named('test') { useJUnitPlatform() }
-
-tasks.test{
-    systemProperty "spring.profiles.active", "test"
-}
-
-// 保险起见，防止有别的依赖把 H2 传递进来
-configurations.all {
-    exclude group: 'com.h2database', module: 'h2'
-}

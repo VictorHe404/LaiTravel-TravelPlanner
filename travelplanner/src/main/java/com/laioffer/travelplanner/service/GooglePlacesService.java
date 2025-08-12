@@ -101,13 +101,11 @@ public class GooglePlacesService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode results = mapper.readTree(json).get("results");
 
-            int seq = 1; //暂时解决sequence问题
             for (JsonNode node : results) {
                 String name = node.get("name").asText();
                 double lat = node.get("geometry").get("location").get("lat").asDouble();
                 double lng = node.get("geometry").get("location").get("lng").asDouble();
-                //pois.add(new PoiDTO(name, lat, lng));
-                pois.add(new PoiDTO(name, lat, lng, seq++));
+                pois.add(new PoiDTO(name, lat, lng));
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse Google API response", e);

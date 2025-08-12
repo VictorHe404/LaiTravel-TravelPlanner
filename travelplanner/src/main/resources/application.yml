@@ -20,10 +20,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop   # 开发可用，生产别用
-    #properties:
-      #hibernate:
-        #dialect: org.hibernate.dialect.PostgreSQLDialect
-    #database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
 
   sql:
     init:
