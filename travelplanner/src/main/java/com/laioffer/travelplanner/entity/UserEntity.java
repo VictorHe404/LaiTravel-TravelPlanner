@@ -3,7 +3,7 @@ package com.laioffer.travelplanner.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public record UserEntity(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id,
         String username,
