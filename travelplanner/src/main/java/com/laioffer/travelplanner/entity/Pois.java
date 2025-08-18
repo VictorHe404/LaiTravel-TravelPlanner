@@ -1,86 +1,68 @@
 package com.laioffer.travelplanner.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.util.Objects;
+import java.util.UUID;
 
 @Entity
+@Table(name = "pois")
 public class Pois {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "uuid")
+    private UUID id;
+
+    @Column(nullable = false, length = 120)
     private String name;
+
+    @Column(nullable = false)
     private double lat;
+
+    @Column(nullable = false)
     private double lng;
+
+    @Column(nullable = false)
     private int sequence;
-    private int day;
 
-    public Pois() {
-    }
+    @Column
+    private Integer day; // 可为 null，按你需要
 
-    public Pois(Long id, String name, double lat, double lng, int sequence, int day) {
-        this.id = id;
-        this.name = name;
-        this.lat = lat;
-        this.lng = lng;
-        this.sequence = sequence;
-        this.day = day;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // 关键：与 Itinerary.pois 对应的 owning-side
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "itinerary_id") // 外键 -> itineraries.id (UUID)
+    @JsonBackReference
+    private Itinerary itinerary;
 
-    public Long getId() {
-        return id;
-    }
+    public Pois() {}
 
-    public String getName() {
-        return name;
-    }
+    public UUID getId() { return id; }
 
-    public double getLat() {
-        return lat;
-    }
+    public void setId(UUID id) { this.id = id; }
 
-    public double getLng() {
-        return lng;
-    }
+    public String getName() { return name; }
 
-    public int getSequence() {
-        return sequence;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public int getDay() {
-        return day;
-    }
+    public double getLat() { return lat; }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Pois)) return false;
-        Pois pos = (Pois) o;
-        return Long.compare(pos.id, id) == 0 &&
-                Double.compare(pos.lat, lat) == 0 &&
-                Double.compare(pos.lng, lng) == 0 &&
-                day == pos.day &&
-                sequence == pos.sequence &&
-                Objects.equals(name, pos.name);
-    }
+    public void setLat(double lat) { this.lat = lat; }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, lat, lng, sequence, day);
-    }
+    public double getLng() { return lng; }
 
-    @Override
-    public String toString() {
-        return "Pois{" +
-                "id=" + id +
-                "name='" + name + '\'' +
-                ", lat=" + lat +
-                ", lng=" + lng +
-                ", sequence=" + sequence +
-                ", day=" + day +
-                '}';
-    }
+    public void setLng(double lng) { this.lng = lng; }
+
+    public int getSequence() { return sequence; }
+
+    public void setSequence(int sequence) { this.sequence = sequence; }
+
+    public Integer getDay() { return day; }
+
+    public void setDay(Integer day) { this.day = day; }
+
+    public Itinerary getItinerary() { return itinerary; }
+
+    public void setItinerary(Itinerary itinerary) { this.itinerary = itinerary; }
 }

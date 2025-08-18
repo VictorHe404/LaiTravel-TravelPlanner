@@ -1,36 +1,82 @@
 package com.laioffer.travelplanner.service;
 
 import com.laioffer.travelplanner.entity.Itinerary;
-import com.laioffer.travelplanner.entity.Pois;
+import com.laioffer.travelplanner.entity.UserEntity;
 import com.laioffer.travelplanner.repository.ItineraryRepository;
+import com.laioffer.travelplanner.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-// ItineraryService.java
 @Service
 public class ItineraryService {
-    private final ItineraryRepository itineraryRepository;
 
-    public ItineraryService(ItineraryRepository itineraryRepository) {
-        this.itineraryRepository = itineraryRepository;
+    private final ItineraryRepository itineraryRepo;
+    private final UserRepository userRepo;
+
+    public ItineraryService(ItineraryRepository itineraryRepo, UserRepository userRepo) {
+        this.itineraryRepo = itineraryRepo;
+        this.userRepo = userRepo;
+    }
+
+    private UserEntity currentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            throw new IllegalStateException("Unauthenticated"); // 由安全层保证一般到不了
+        }
+        var username = auth.getName();
+        return userRepo.findByUsername(username).orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
     @Transactional
-    public UUID createItinerary(Long userId, String city, int days, List<Pois> positions) {
-        for (Pois poi : positions) { poi.setId(null); } // 保证新建保存
-        Itinerary saved = itineraryRepository.save(
-                new Itinerary(null, userId, city, days, OffsetDateTime.now(), positions)
-        ); // 你现有的构造器用的就是这个签名 :contentReference[oaicite:9]{index=9} :contentReference[oaicite:10]{index=10}
-        return saved.getId(); // 返回真实 UUID
+    public Itinerary create(Itinerary toCreate) {
+        var user = currentUser();
+
+        // 绑定当前用户
+        toCreate.setUser(user);
+
+        // 让子表建立反向关系
+        if (toCreate.getPois() != null) {
+            toCreate.getPois().forEach(p -> p.setItinerary(toCreate));
+        }
+
+        return itineraryRepo.save(toCreate);
     }
 
     @Transactional
-    public Itinerary getItinerary(UUID id) {
-        return itineraryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Itinerary not found: " + id));
+    public Itinerary update(UUID id, Itinerary update) {
+        var user = currentUser();
+        var existing = itineraryRepo.findByIdAndUser_Id(id, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Itinerary not found"));
+
+        existing.setCity(update.getCity());
+        existing.setDays(update.getDays());
+
+        // 重设 POIs（级联 + orphanRemoval）
+        existing.setPois(update.getPois());
+
+        return itineraryRepo.save(existing);
+    }
+
+    public Itinerary getById(UUID id) {
+        var user = currentUser();
+        return itineraryRepo.findByIdAndUser_Id(id, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Itinerary not found"));
+    }
+
+    public List<Itinerary> listMine() {
+        var user = currentUser();
+        return itineraryRepo.findAllByUser_Id(user.getId());
+    }
+
+    @Transactional
+    public void delete(UUID id) {
+        var user = currentUser();
+        var existing = itineraryRepo.findByIdAndUser_Id(id, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Itinerary not found"));
+        itineraryRepo.delete(existing);
     }
 }
