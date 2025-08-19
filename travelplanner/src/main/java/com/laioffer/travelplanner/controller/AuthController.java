@@ -26,17 +26,17 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body("OK");
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest req) {
-        UserEntity u = auth.login(req);
-        return ResponseEntity.ok("OK");
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest req) {
+//        UserEntity u = auth.login(req);
+//        return ResponseEntity.ok("OK");
+//    }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, null);
-        return ResponseEntity.ok("OK");
-    }
+//    @PostMapping("/logout")
+//    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+//        new SecurityContextLogoutHandler().logout(request, response, null);
+//        return ResponseEntity.ok("OK");
+//    }
 
     @GetMapping("/me")
     public ResponseEntity<MeResponse> me() {
