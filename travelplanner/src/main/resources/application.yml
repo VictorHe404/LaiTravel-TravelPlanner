@@ -36,3 +36,6 @@ google:
     useProxy: false
     proxyHost: 127.0.0.1
     proxyPort: 7890
+logging:
+  level:
+    org.springframework.security: DEBUG
