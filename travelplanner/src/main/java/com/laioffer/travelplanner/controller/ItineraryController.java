@@ -33,17 +33,20 @@ public class ItineraryController {
         return ResponseEntity.ok(updated);
     }
 
+
+    // [CHANGED] 详情查询：改为使用 service.getOwned(id) 做所有权校验
     @GetMapping("/{id}")
-    public ResponseEntity<Itinerary> getById(@PathVariable UUID id) {
+    public ResponseEntity<Itinerary> getOne(@PathVariable UUID id) {
         try {
-            var it = service.getById(id);
-            return ResponseEntity.ok(it);
+            return ResponseEntity.ok(service.getOwned(id)); // 非本人或不存在 -> 抛异常走 404
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @GetMapping
+    // [ADDED] 新增“当前用户的全部行程”（最小实现：不分页）
+    // 路由：GET /api/itinerary/mine
+    @GetMapping("/mine")
     public ResponseEntity<List<Itinerary>> listMine() {
         return ResponseEntity.ok(service.listMine());
     }

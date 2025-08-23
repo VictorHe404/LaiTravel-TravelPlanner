@@ -72,6 +72,13 @@ public class ItineraryService {
         return itineraryRepo.findAllByUser_Id(user.getId());
     }
 
+    // [ADDED] 为“按 id 获取，但必须是当前用户的行程”
+    public Itinerary getOwned(UUID id) {
+        var user = currentUser();
+        return itineraryRepo.findByIdAndUser_Id(id, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Itinerary not found"));
+    }
+
     @Transactional
     public void delete(UUID id) {
         var user = currentUser();
