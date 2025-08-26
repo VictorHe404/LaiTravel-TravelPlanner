@@ -4,9 +4,9 @@ import PlannerForm from "@/components/PlannerForm";
 import DayPOISection from "@/components/DayPOISection";
 import PlannerMap from "@/components/PlannerMap";
 import SavePlanButton from "@/components/SavePlanButton";
-import {POI, DayPOI } from "@/components/types";
+import { POI, DayPOI } from "@/components/types";
 import { useRouter } from "next/navigation";
-
+import AIChatBar from "@/components/AIChatBar";   // ⬅️ import the new chat component
 
 export default function PlannerPage() {
     const router = useRouter();
@@ -83,22 +83,14 @@ export default function PlannerPage() {
                             />
                         ))}
 
-                        {/* Save handled by SavePlanButton */}
                         <SavePlanButton
                             planData={{ city, days, pois: allPois }}
                             onPlanSaved={(saved) => {
-                                const id =
-                                    (saved as any)?.plan?.id ??
-                                    (saved as any)?.id;
-
-                                if (id) {
-                                    router.push(`/planner/${id}`);
-                                } else {
-                                    console.warn("Saved, but no id returned from backend.");
-                                }
+                                const id = (saved as any)?.plan?.id ?? (saved as any)?.id;
+                                if (id) router.push(`/planner/${id}`);
+                                else console.warn("Saved, but no id returned from backend.");
                             }}
                         />
-
                     </div>
                 </div>
 
@@ -107,6 +99,14 @@ export default function PlannerPage() {
                     <PlannerMap city={city} pois={currentDayPois} />
                 </div>
             </div>
+
+            {/* Floating AI Chat Bar */}
+            <AIChatBar
+                city={city}
+                days={days}
+                selectedDay={selectedDay}
+                dayPOIs={dayPOIs}
+            />
         </main>
     );
 }
